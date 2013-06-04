@@ -1,0 +1,354 @@
+@import url(http://fonts.googleapis.com/css?family=Handlee|Rancho);
+* {
+	margin: 0;
+	padding: 0;
+	font-family: Helvetica, Arial, sans-serif;
+}
+html, body {
+	height:100%;
+	text-align: center;
+}
+p {
+	color: #888;
+	line-height: 2em;
+	font-size: 0.9em;
+	text-indent: 4em;
+}
+section {
+	width: 60%;
+	min-height:100%;
+	margin: 0 auto 2em;
+	text-align: left;
+	clear: both;
+}
+body section:last-child {
+	min-height: 0;
+}
+section h1 {
+	padding-top: 1em;
+	margin-bottom: 0.3em;
+	font-size: 3em;
+	font-family: Rancho;
+}
+section h2 {
+	text-align: center;
+	margin: 0.5em;
+	font-size: 2em;
+	font-family: Rancho;
+}
+section h3 {
+	text-align: center;
+	margin: 0.5em;
+	font-size: 1.5em;
+}
+
+.col2left {
+	float: left;
+	width: 47.5%;
+	/*border: 1px solid red;*/
+}
+
+.col2right {
+	float: right;
+	width: 47.5%;
+	/*border: 1px solid red;*/
+}
+
+.col4-3left {
+	float: left;
+	width: 74.25%;
+	margin-right: 3%;
+}
+.col4-3right {
+	float: right;
+	width: 74.25%;
+}
+.col4-1left {
+	float: left;
+	width: 22.45%;
+	margin-right: 3%;
+}
+
+.col4-1right {
+	float: right;
+	width: 22%;
+}
+.row3-2 {
+	height: 53%;
+	margin-bottom: 3%;
+}
+.row3-1 {
+	height: 25%;
+	margin-bottom: 3%;
+}
+.box {
+	/*border: 1px solid #37b;*/
+	border-radius: 1em;
+	-moz-border-radius: 1em;
+	position: relative;
+	overflow: hidden;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: cover;
+}
+
+.box p:before {  
+	content: "";
+    display: block;  
+    position: absolute;  
+    top: 0;  
+    bottom: 0;  
+    left: 0;  
+    right: 0;  
+  	width: 100%;
+  	height: 100%;
+    background: rgba(51,119,187, 0);
+    -moz-transition: background .1s linear;  
+    -webkit-transition: background .1s linear;  
+    -ms-transition: background .1s linear;  
+    -o-transition: background .1s linear;  
+    transition: background .1s linear;  
+    border-radius: 0.5em;
+    width: 100%;
+    z-index: 10;
+
+}  
+  
+.box p:hover:before {  
+    background: rgba(51,119,187, 0.65);
+    border-radius: 0.5em; 
+    z-index:-1;
+} 
+
+.box p {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-indent: 0;
+    border-radius: 1em;
+    -moz-border-radius: 1em;
+    text-align: center;
+    color: #fff;
+    z-index: 11;
+    font-size: 2em;
+    line-height: 1em;
+    padding-top: 1em;
+} 
+.box:hover p {
+	display: block;
+}
+/*********
+* NAMES *
+*********/
+/* So everyone's names always show up as their own color */
+.lstrebel {
+	color: #b33;
+}
+.jtobak {
+	color: #36b;
+}
+.kdonovan {
+	color: #695;
+}
+
+/**************
+* NAVIGATION *
+**************/
+
+#mainnav {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	z-index: 999;
+	height: 1em;
+	font-size: 1.25em;
+}
+#mainnav ul {
+	display:inline-block;
+	list-style-type:none;
+	margin: 0 auto;
+	background: #fff;
+	padding-bottom: 0.2em;
+	/*border: 1px solid #000;
+	border-top: none;*/
+	width: 100%;
+}
+#mainnav ul li {
+	display:inline;
+}
+#mainnav ul li a {
+	display: inline-block;
+	text-decoration: none;
+	color: #d94;
+	margin: 0 1em;
+	padding-top: 0.2em;
+}
+#mainnav ul li a:link {
+
+}
+#mainnav ul li a:visited {
+
+}
+#mainnav ul li a:hover {
+	border-top:0.2em solid #d94;
+	padding-top: 0em;
+}
+#mainnav ul li a:active {
+
+}
+
+footer {
+	background: #555;
+	padding: 1em 20% 1em;
+	margin-bottom: 2em;
+	text-align: left;
+	color: #fff;
+	font-size: 0.8em;
+}
+
+/************
+* TEST AREA *
+*************/
+#testarea {
+	display: none;
+	background: #f00;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 9999;
+	padding: 0;
+	margin: 0;
+	text-align: left;
+}
+#testarea pre {
+	margin: 0;
+	padding: 0;
+}
+/********
+* HOME *
+********/
+
+#home {
+	position:relative;
+	z-index: 1000;
+	display:table;
+	height:100%;
+	width: 100%;
+
+	border-bottom: 1px solid #000;
+
+	/* Gradient CSS provided by http://css-tricks.com/examples/CSS3Gradient/ */
+	/* fallback */
+	background-color: #37b;
+	background-image: url(images/radial_bg.png);
+	background-position: center center;
+	background-repeat: no-repeat;
+
+	/* Safari 4-5, Chrome 1-9 */
+	/* Can't specify a percentage size? Laaaaaame. */
+	background: -webkit-gradient(radial, center center, 0, center center, 460, from(#048), to(#6ae));
+
+	/* Safari 5.1+, Chrome 10+ */
+	background: -webkit-radial-gradient(circle, #048, #6ae);
+
+	/* Firefox 3.6+ */
+	background: -moz-radial-gradient(circle, #048, #6ae);
+
+	/* IE 10 */
+	background: -ms-radial-gradient(circle, #048, #6ae);
+}
+#home nav ul {
+	list-style-type:none;
+	margin: 0 auto;
+}
+#home nav ul li {
+	display:inline;
+}
+#home nav ul li a {
+	display: inline-block;
+	padding: 0 0.1em;
+	text-decoration: none;
+	width: 5em;
+	color: #ddd;
+}
+#home nav ul li a:link {
+	color:#ddd;
+}
+#home nav ul li a:visited {
+
+}
+#home nav ul li a:hover {
+	color: #aaa;
+}
+#home nav ul li a:active {
+	color: #aaa;
+}
+#home #logo {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+
+#home #logo img {
+	width: 50%;
+}
+
+/************
+* ABOUT US *
+************/
+#aboutus .profile {
+	float: left;
+	width: 30%;
+	margin-right: 5%;
+}
+#aboutus .profile:last-child {
+	margin-right: 0;
+}
+#aboutus .profile img:first-child {
+	width: auto;
+	margin: 0 auto;
+}
+#aboutus .profile img {
+	display: block;
+	width: 56px;
+	margin: -28px auto 0;
+}
+#aboutus .profile h3 {
+	margin-bottom: 1em;
+}
+#aboutus .profile p {
+	line-height: 1.2em;
+	text-indent: 0;
+}
+/**************
+ * CONTACT US *
+ **************/
+#contactus p {
+	text-indent: 0;
+}
+#contactus input, #contactus textarea {
+	width: 100%;
+	padding: 0.75em;
+	margin: 0 0 1em;
+	border: 2px solid #37b;
+}
+#contactus textarea {
+	height: 14em;
+}
+#contactus input[type=submit] {
+	width: 33%;
+	-moz-border-radius: 0.5em;
+	border-radius: 0.5em;
+	background-color: #37b;
+	color: #fff;
+	font-size: 1.1em;
+	padding: 0.25em;
+	border: 2px solid #37b;
+}
+#contactus input[type=submit]:hover {
+	background-color: #59d;
+}
