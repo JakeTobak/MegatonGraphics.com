@@ -1,0 +1,612 @@
+<modification>
+	<id>Customer Order Product Upload</id>
+	<version>1.4</version>
+	<vqmver>2.1.7</vqmver>
+	<author>OpenCart.my</author>
+    <file name="system/engine/action.php">
+    	<operation>
+    		<search position="after"><![CDATA[function __construct(]]></search>
+    		<add><![CDATA[$route = ($route == 'account/upload') ? 'myoc/copu/customer' : $route;]]></add>
+		</operation>
+	</file>
+    <file name="system/engine/loader.php">
+    	<operation error="skip">
+    		<search position="replace"><![CDATA[function helper(]]></search>
+    		<add><![CDATA[function _helper(]]></add>
+		</operation>
+    	<operation>
+    		<search position="before"><![CDATA[function library(]]></search>
+    		<add><![CDATA[public function helper($helper) {
+				$file = DIR_SYSTEM . 'helper/' . $helper . '.php';
+				if (file_exists($file)) {
+					include_once($file);
+				} else {
+					trigger_error('Error: Could not load helper ' . $helper . '!');
+					exit();					
+				}
+			}]]></add>
+		</operation>
+	</file>
+    <file name="system/library/cart.php">
+		<operation>
+			<search position="before"><![CDATA[$option_query->row['type'] == 'file']]></search>
+			<add><![CDATA[} elseif ($option_query->row['type'] == 'file' && is_array($option_value)) {
+				foreach ($option_value as $upload) {
+					$option_data[] = array(
+						'product_option_id'       => $product_option_id,
+						'product_option_value_id' => '',
+						'option_id'               => $option_query->row['option_id'],
+						'option_value_id'         => '',
+						'name'                    => $option_query->row['name'],
+						'option_value'            => $upload,
+						'type'                    => $option_query->row['type'],
+						'quantity'                => '',
+						'subtract'                => '',
+						'price'                   => '',
+						'price_prefix'            => '',
+						'points'                  => '',
+						'points_prefix'           => '',								
+						'weight'                  => '',
+						'weight_prefix'           => ''
+					);		
+				}]]></add>
+		</operation>
+    </file>
+    <file name="admin/language/english/english.php">
+		<operation>
+			<search position="after"><![CDATA[$_['tab_ip']]]></search>
+			<add><![CDATA[$_['tab_copu'] = 'Uploads';]]></add>
+		</operation>
+    </file>
+    <file name="admin/controller/sale/customer.php">
+		<operation>
+			<search position="after"><![CDATA[$this->model_sale_customer->editCustomer]]></search>
+			<add><![CDATA[$this->load->model('myoc/copu');
+				$uploads = $this->model_myoc_copu->getUploads(array('customer_id' => $this->request->get['customer_id']));
+				foreach($uploads as $upload) {
+					if(isset($this->request->post['customer_upload']) && !empty($this->request->post['customer_upload']) && in_array($upload['upload_id'], $this->request->post['customer_upload'])) {
+						$this->request->post['customer_upload'] = array_diff($this->request->post['customer_upload'], array($upload['upload_id']));
+					} elseif(unlink(DIR_DOWNLOAD . $upload['filename'])) {
+						$this->model_myoc_copu->deleteUpload($upload['upload_id']);
+					}
+				}
+				if(isset($this->request->post['customer_upload']) && !empty($this->request->post['customer_upload'])) {					
+					foreach($this->request->post['customer_upload'] as $upload_id) {
+						$this->model_myoc_copu->addCustomerUpload(array('upload_id' => $upload_id, 'customer_id' => $this->request->get['customer_id']));
+					}
+				}]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$this->model_sale_customer->deleteCustomer]]></search>
+			<add><![CDATA[$this->load->model('myoc/copu');
+				$uploads = $this->model_myoc_copu->getUploads(array('customer_id' => $customer_id));
+				if($uploads) {
+					foreach($uploads as $upload) {
+						if(unlink(DIR_DOWNLOAD . $upload['filename'])) {
+							$this->model_myoc_copu->deleteUpload($upload['upload_id']);
+						}
+					}
+				}]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[sale/customer_form.tpl]]></search>
+			<add><![CDATA[$this->data['tab_copu'] = $this->language->get('tab_copu');
+				$this->data['copu_customer'] = $this->getChild('myoc/copu', array('type' => 'customer'));]]></add>
+		</operation>
+    </file>
+    <file name="admin/view/template/sale/customer_form.tpl">
+		<operation>
+			<search position="replace"><![CDATA[<?php echo $tab_ip; ?>]]></search>
+			<add><![CDATA[<?php echo $tab_ip; ?><?php if($copu_customer) { ?></a><a href="#tab-copu"><?php echo $tab_copu; } ?>]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[</form>]]></search>
+			<add><![CDATA[<?php echo $copu_customer; ?>]]></add>
+		</operation>
+    </file>
+    <file name="admin/model/sale/order.php">
+		<operation error="skip"> <!-- fix missing getOrderOption() in OCv1.5.1.3 -->
+			<search position="replace"><![CDATA[function getOrderOption(]]></search>
+			<add><![CDATA[function _getOrderOption(]]></add>
+		</operation>
+		<operation> <!-- fix missing getOrderOption() in OCv1.5.1.3 -->
+			<search position="before"><![CDATA[function getOrderOptions(]]></search>
+			<add><![CDATA[public function getOrderOption($order_id, $order_option_id) {
+					$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_option WHERE order_id = '" . (int)$order_id . "' AND order_option_id = '" . (int)$order_option_id . "'");
+					return $query->row;
+				}]]></add>
+		</operation>
+    </file>
+    <file name="admin/controller/sale/order.php">
+		<operation>
+			<search position="after"><![CDATA[$this->model_sale_order->editOrder]]></search>
+			<add><![CDATA[$this->load->model('myoc/copu');
+				$uploads = $this->model_myoc_copu->getUploads(array('order_id' => $this->request->get['order_id']));
+				foreach($uploads as $upload) {
+					if(isset($this->request->post['order_upload']) && !empty($this->request->post['order_upload']) && in_array($upload['upload_id'], $this->request->post['order_upload'])) {
+						$this->request->post['order_upload'] = array_diff($this->request->post['order_upload'], array($upload['upload_id']));
+					} elseif(unlink(DIR_DOWNLOAD . $upload['filename'])) {
+						$this->model_myoc_copu->deleteUpload($upload['upload_id']);
+					}
+				}
+				if(isset($this->request->post['order_upload']) && !empty($this->request->post['order_upload'])) {					
+					foreach($this->request->post['order_upload'] as $upload_id) {
+						$this->model_myoc_copu->addOrderUpload(array('upload_id' => $upload_id, 'order_id' => $this->request->get['order_id']));
+					}
+				}]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$this->model_sale_order->deleteOrder]]></search>
+			<add><![CDATA[$this->load->model('myoc/copu');
+				$uploads = $this->model_myoc_copu->getUploads(array('order_id' => $order_id));
+				if($uploads) {
+					foreach($uploads as $upload) {
+						if(unlink(DIR_DOWNLOAD . $upload['filename'])) {
+							$this->model_myoc_copu->deleteUpload($upload['upload_id']);
+						}
+					}
+				}]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[sale/order_form.tpl]]></search>
+			<add><![CDATA[$this->data['tab_copu'] = $this->language->get('tab_copu');
+				$this->data['copu_order'] = $this->getChild('myoc/copu', array('type' => 'order'));
+				$this->data['copu_product_option_ids'] = str_replace(",", " || option['option_id'] == ", $this->config->get('upload_product_option'));
+				$this->data['copu_product_html'] = $this->getChild('myoc/copu/product', array('type' => 'product', 'html' => true));
+				$this->data['copu_product_js'] = $this->getChild('myoc/copu/product', array('type' => 'product', 'js' => true));]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[function info(]]></search>
+			<add><![CDATA[$this->load->helper('copu');]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->url->link('sale/order/download']]></search>
+			<add><![CDATA['value' => (function_exists('utf8_substr') ? utf8_substr($option['value'], 0, utf8_strrpos($option['value'], '.')) : substr($option['value'], 0, strrpos($option['value'], '.'))) . '</a> [' .formatFilesize(filesize(DIR_DOWNLOAD . $option['value'])) . ']<a>',]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[sale/order_info.tpl]]></search>
+			<add><![CDATA[$this->data['tab_copu'] = $this->language->get('tab_copu');
+				$this->data['copu_order'] = $this->getChild('myoc/copu', array('type' => 'order', 'edit' => false));]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[foreach ($orders as $order_id)]]></search>
+			<add><![CDATA[$this->data['copu_order'][$order_id] = $this->getChild('myoc/copu/invoice', array('order_id' => $order_id));]]></add>
+		</operation>
+    </file>
+    <file name="admin/view/template/sale/order_info.tpl">
+		<operation error="skip"><!-- OCv1.5.5 -->
+			<search position="replace"><![CDATA[<?php echo $tab_history; ?>]]></search>
+			<add><![CDATA[<?php echo $tab_history; ?><?php if($copu_order) { ?></a><a href="#tab-copu"><?php echo $tab_copu; } ?>]]></add>
+		</operation>
+		<operation error="skip"><!-- OCv1.5.4.1 and below -->
+			<search position="replace"><![CDATA[<?php echo $tab_order_history; ?>]]></search>
+			<add><![CDATA[<?php echo $tab_order_history; ?><?php if($copu_order) { ?></a><a href="#tab-copu"><?php echo $tab_copu; } ?>]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[<div id="tab-history" class="vtabs-content">]]></search>
+			<add><![CDATA[<?php echo $copu_order; ?>]]></add>
+		</operation>
+    </file>
+    <file name="admin/view/template/sale/order_form.tpl">
+		<operation>
+			<search position="replace"><![CDATA[<?php echo $tab_total; ?>]]></search>
+			<add><![CDATA[<?php echo $tab_total; ?><?php if($copu_order) { ?></a><a href="#tab-copu"><?php echo $tab_copu; } ?>]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[</form>]]></search>
+			<add><![CDATA[<?php echo $copu_order; ?>]]></add>
+		</operation>
+		<operation error="skip">
+			<search position="after" index="1"><![CDATA[if (option['type'] == 'file')]]></search>
+			<add><![CDATA[if(option['option_id'] == <?php echo $copu_product_option_ids; ?>) { <?php echo $copu_product_html; ?> continue; }]]></add>
+		</operation>
+		<operation error="skip">
+			<search position="after" index="2"><![CDATA[if (option['type'] == 'file')]]></search>
+			<add><![CDATA[if(option['option_id'] == <?php echo $copu_product_option_ids; ?>) { <?php echo $copu_product_js; ?> continue; }]]></add>
+		</operation>
+    </file>
+    <file name="admin/view/template/sale/order_invoice.tpl">
+		<operation>
+			<search position="before"><![CDATA[if ($order['comment'])]]></search>
+			<add><![CDATA[<?php echo $copu_order[$order['order_id']]; ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/checkout/manual.php">
+		<operation error="skip">
+			<search position="before"><![CDATA[$option['type'] == 'file']]></search>
+			<add><![CDATA[} elseif ($option['type'] == 'file') {
+				$option_data[$option['product_option_id']][] = $option['value'];]]></add>
+		</operation>
+		<operation error="skip">
+			<search position="before"><![CDATA[if ($product_option['required']]]></search>
+			<add><![CDATA[if($product_option['type'] == 'file' && in_array($product_option['option_id'], explode(',', $this->config->get('upload_product_option')))) {
+					$product_option['required'] = false;
+				}]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/account/register.php">
+		<operation>
+			<search position="after"><![CDATA[$this->model_account_customer->addCustomer(]]></search>
+			<add><![CDATA[if($this->config->get('upload_customer_status') && $this->config->get('upload_customer_register') && $this->config->get('upload_customer_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_customer_store'))) && isset($this->session->data['customer_upload']) && !empty($this->session->data['customer_upload'])) {
+				$this->load->model('myoc/copu');
+				$new_customer_id = $this->model_myoc_copu->getNewCustomerId();
+				if(method_exists($this->encryption, 'encrypt')) {
+					$encryption = $this->encryption;
+				} else {
+					$this->load->library('encryption');
+				 	$encryption = new Encryption($this->config->get('config_encryption'));
+				}
+				foreach($this->session->data['customer_upload'] as $upload) {
+					$this->model_myoc_copu->addUpload(array('filename' => $encryption->decrypt($upload), 'customer_id' => $new_customer_id));
+				}
+				unset($this->session->data['customer_upload']);
+			}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->render()]]></search>
+			<add><![CDATA[$this->data['copu_register'] = $this->getChild('myoc/copu', array('type' => 'customer', 'path' => 'register'));]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[function validate(]]></search>
+			<add><![CDATA[if($this->config->get('upload_customer_status') && $this->config->get('upload_customer_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_customer_store'))) && $this->config->get('upload_customer_register') && $this->config->get('upload_customer_minimum') && (!isset($this->session->data['customer_upload']) || count($this->session->data['customer_upload']) < $this->config->get('upload_customer_minimum'))) { $this->language->load('myoc/copu'); $this->error['warning'] = sprintf($this->language->get('error_upload_minimum'), $this->config->get('upload_customer_minimum')); }]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/account/register.tpl">
+		<operation>
+			<search position="before"><![CDATA[<?php if ($text_agree) { ?>]]></search>
+			<add><![CDATA[<?php echo $copu_register; ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/account/order.php">
+		<operation>
+			<search position="before"><![CDATA[$order_option['type'] == 'file']]></search>
+			<add><![CDATA[} elseif ($order_option['type'] == 'file') {
+				if(method_exists($this->encryption, 'encrypt')) {
+					$encryption = $this->encryption;
+				} else {
+					$this->load->library('encryption');
+				 	$encryption = new Encryption($this->config->get('config_encryption'));
+				}
+				$option_data[$order_option['product_option_id']][] = $encryption->encrypt($order_option['value']);]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[link('checkout/cart']]></search>
+			<add><![CDATA[if($this->config->get('upload_order_status') && $this->config->get('upload_order_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_order_store')))) {
+					$this->load->model('myoc/copu');
+					$uploads = $this->model_myoc_copu->getUploads(array('order_id' => $this->request->get['order_id']));
+					if(!isset($this->session->data['order_upload'])) {
+						$this->session->data['order_upload'] = array();
+					}
+					if(method_exists($this->encryption, 'encrypt')) {
+						$encryption = $this->encryption;
+					} else {
+						$this->load->library('encryption');
+					 	$encryption = new Encryption($this->config->get('config_encryption'));
+					}
+					foreach($uploads as $upload) {
+						if (file_exists(DIR_DOWNLOAD . $upload['filename'])) {
+							$upload_id = md5(mt_rand());
+							copy(DIR_DOWNLOAD . $upload['filename'], DIR_DOWNLOAD . $upload['mask'] . '.' . $upload_id);
+							$this->session->data['order_upload'][$upload_id] = $encryption->encrypt($upload['mask'] . '.' . $upload_id);
+						}
+					}
+				}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$option_data[] = array(]]></search>
+			<add><![CDATA[if($option['type'] == 'file' && $this->config->get('upload_product_status') && $this->config->get('upload_product_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_product_store')))) { continue; }]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>
+			<add><![CDATA[$this->data['copu_cart'][$product['order_product_id']] = $this->getChild('myoc/copu/cart', array('order_id' => $this->request->get['order_id'], 'order_product_id' => $product['order_product_id']));]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$this->data['products'][] = array(]]></search>
+			<add><![CDATA['order_product_id' => $product['order_product_id'],]]></add>
+		</operation>
+		<operation>
+			<search position="before" index="1"><![CDATA[account/order_info.tpl]]></search>
+			<add><![CDATA[$this->data['copu_history'] = $this->getChild('myoc/copu', array('type' => 'order'));]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/account/order_info.tpl">
+		<operation>
+			<search position="after"><![CDATA[<?php echo $option['name']; ?>]]></search>
+			<add><![CDATA[<?php } echo $copu_cart[$product['order_product_id']]; if(false) { ?>]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[<?php if ($comment) { ?>]]></search>
+			<add><![CDATA[<?php echo $copu_history; ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/account/account.php">
+		<operation>
+			<search position="after"><![CDATA[$this->data['heading_title']]]></search>
+			<add><![CDATA[$this->data['copu_customer'] = ($this->config->get('upload_customer_status') && $this->config->get('upload_customer_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_customer_store')))) ? $this->url->link('account/upload', '', 'SSL') : false;
+				$this->language->load('myoc/copu');
+				$this->data['text_copu_customer'] = $this->language->get('text_copu_customer');]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/account/account.tpl">
+		<operation>
+			<search position="after"><![CDATA[<?php echo $text_wishlist; ?>]]></search>
+			<add><![CDATA[<?php if($copu_customer) { ?><li><a href="<?php echo $copu_customer; ?>"><?php echo $text_copu_customer; ?></a></li><?php } ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/module/account.php">
+		<operation>
+			<search position="after"><![CDATA[$this->data['heading_title']]]></search>
+			<add><![CDATA[$this->data['copu_customer'] = ($this->config->get('upload_customer_status') && $this->config->get('upload_customer_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_customer_store')))) ? $this->url->link('account/upload', '', 'SSL') : false;
+				$this->language->load('myoc/copu');
+				$this->data['text_copu_customer'] = $this->language->get('text_copu_customer');]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/module/account.tpl">
+		<operation>
+			<search position="after"><![CDATA[<?php echo $text_wishlist; ?>]]></search>
+			<add><![CDATA[<?php if($copu_customer) { ?><li><a href="<?php echo $copu_customer; ?>"><?php echo $text_copu_customer; ?></a></li><?php } ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/checkout/cart.php">
+   		<operation>
+			<search position="before"><![CDATA[$this->cart->update]]></search>
+			<add><![CDATA[break; } $cart_products = $this->cart->getProducts(); 
+				foreach ($this->request->post['quantity'] as $key => $value) {
+					if($this->config->get('upload_product_status') && $this->config->get('upload_product_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_product_store'))) && $this->config->get('upload_product_force_qty')) {
+						foreach($cart_products[$key]['option'] as $option_data) {
+							if(in_array($option_data['option_id'], explode(',', $this->config->get('upload_product_option')))) {
+								continue 2;
+							}
+						}
+					}
+					$this->cart->update($key, $value);
+				}
+				if(false) {]]></add>
+		</operation>
+   		<operation>
+			<search position="before"><![CDATA[encryption->decrypt]]></search>
+			<add><![CDATA[if($this->config->get('upload_product_status') && $this->config->get('upload_product_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_product_store')))) {
+					$encryption = method_exists($this->encryption, 'encrypt') ? $this->encryption : $encryption;
+					$file = $encryption->decrypt($option['option_value']);
+					if($file && file_exists(DIR_DOWNLOAD . $file) && filesize(DIR_DOWNLOAD . $file) && $this->config->get('upload_product_replace')) {
+     					$imageinfo = @getimagesize(DIR_DOWNLOAD . $file);
+    					if($imageinfo[2] > 0 && $imageinfo[2] < 4) {
+    						$filename = function_exists('utf8_substr') ? utf8_substr($file, 0, utf8_strrpos($file, '.')) : substr($file, 0, strrpos($file, '.'));
+		                    if(!file_exists(DIR_IMAGE . $filename)) {
+		                    	copy(DIR_DOWNLOAD . $file, DIR_IMAGE . $filename);
+		                    }
+     						$image = $this->model_tool_image->resize($filename, $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
+     						unlink(DIR_IMAGE . $filename); //comment out to improve performance but decrease security
+     					}
+         			}
+         			continue;
+				}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>
+			<add><![CDATA[$key = isset($product['key']) ? $product['key'] : $result['key']; $this->data['copu_cart'][$key] = $this->getChild('myoc/copu/cart', array('key' => $key));]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->render()]]></search>
+			<add><![CDATA[$this->data['copu_order'] = $this->getChild('myoc/copu', array('type' => 'order', 'path' => 'cart'));]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[if ($product_option['required']]]></search>
+			<add><![CDATA[if($product_option['type'] == 'file' && $this->config->get('upload_product_status') && $this->config->get('upload_product_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_product_store'))) && in_array($product_option['option_id'], explode(',', $this->config->get('upload_product_option')))) {
+					$product_id = isset($this->request->post['product_id']) ? $this->request->post['product_id'] : $product_id;
+					if($this->config->get('upload_product_minimum') && (!isset($this->session->data['product_upload'][$product_id][$product_option['product_option_id']]) || count($this->session->data['product_upload'][$product_id][$product_option['product_option_id']]) < $this->config->get('upload_product_minimum'))) {
+						$this->language->load('myoc/copu');
+						$json['error'][$product_option['product_option_id']] = $json['error']['option'][$product_option['product_option_id']] = sprintf($this->language->get('error_upload_minimum'), $this->config->get('upload_product_minimum'));
+					}
+					$option[$product_option['product_option_id']] = isset($this->session->data['product_upload'][$product_id][$product_option['product_option_id']]) ? $this->session->data['product_upload'][$product_id][$product_option['product_option_id']] : false;
+					$product_option['required'] = false;
+				}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->cart->add]]></search>
+			<add><![CDATA[if($this->config->get('upload_product_status') && $this->config->get('upload_product_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_product_store'))) && $this->config->get('upload_product_force_qty') && isset($this->session->data['product_upload'][$this->request->post['product_id']]) && !empty($this->session->data['product_upload'][$this->request->post['product_id']])) { $quantity = count($this->session->data['product_upload'][$this->request->post['product_id']], COUNT_RECURSIVE) - count($this->session->data['product_upload'][$this->request->post['product_id']]); }]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$this->cart->add]]></search>
+			<add><![CDATA[if(isset($this->session->data['product_upload'][$this->request->post['product_id']])) { unset($this->session->data['product_upload'][$this->request->post['product_id']]); }]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/checkout/cart.tpl">
+		<operation>
+			<search position="after"><![CDATA[<?php echo $option['name']; ?>]]></search>
+			<add><![CDATA[<?php } echo $copu_cart[$product['key']]; if(false) { ?>]]></add>
+		</operation>
+		<operation>
+			<search position="after" index="1"><![CDATA[</form>]]></search>
+			<add><![CDATA[<?php echo $copu_order; ?>]]></add>
+		</operation>
+    </file>
+    <file error="skip" name="catalog/controller/module/cart.php">
+   		<operation>
+			<search position="before"><![CDATA[$option_data[] = array(]]></search>
+			<add><![CDATA[if($option['type'] == 'file' && $this->config->get('upload_product_status') && $this->config->get('upload_product_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_product_store')))) {
+					if($this->config->get('upload_product_replace') && $filename && file_exists(DIR_DOWNLOAD . $filename) && filesize(DIR_DOWNLOAD . $filename)) {
+     					$imageinfo = @getimagesize(DIR_DOWNLOAD . $filename);
+    					if($imageinfo[2] > 0 && $imageinfo[2] < 4) {
+		                    if(!file_exists(DIR_IMAGE . $value)) {
+		                    	copy(DIR_DOWNLOAD . $filename, DIR_IMAGE . $value);
+		                    }
+     						$image = $this->model_tool_image->resize($value, $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height'));
+     						unlink(DIR_IMAGE . $value); //comment out to improve performance but decrease security
+     					}
+         			}
+         			continue;
+         		}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>
+			<add><![CDATA[$key = isset($product['key']) ? $product['key'] : $result['key']; $this->data['copu_cart'][$key] = $this->getChild('myoc/copu/cart', array('key' => $key));]]></add>
+		</operation>
+    </file>
+    <file error="skip" name="catalog/view/theme/*/template/module/cart.tpl">
+		<operation>
+			<search position="after"><![CDATA[<?php echo $option['name']; ?>]]></search>
+			<add><![CDATA[<?php } echo $copu_cart[$product['key']]; if(false) { ?>]]></add>
+		</operation>
+    </file>
+    <file error="skip" name="catalog/view/theme/*/template/common/cart.tpl"> <!-- OCv1.5.1.3 -->
+		<operation>
+			<search position="after"><![CDATA[<?php echo $option['name']; ?>]]></search>
+			<add><![CDATA[<?php } echo $copu_cart[$product['key']]; if(false) { ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/checkout/register.php">
+		<operation>
+			<search position="before"><![CDATA[$this->render()]]></search>
+			<add><![CDATA[$this->data['copu_register'] = $this->getChild('myoc/copu', array('type' => 'customer', 'path' => 'register'));]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$json = array();]]></search>
+			<add><![CDATA[if($this->config->get('upload_customer_status') && $this->config->get('upload_customer_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_customer_store'))) && $this->config->get('upload_customer_register') && $this->config->get('upload_customer_minimum') && (!isset($this->session->data['customer_upload']) || count($this->session->data['customer_upload']) < $this->config->get('upload_customer_minimum'))) { $this->language->load('myoc/copu'); $json['error']['warning'] = sprintf($this->language->get('error_upload_minimum'), $this->config->get('upload_customer_minimum')); }]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$this->model_account_customer->addCustomer(]]></search>
+			<add><![CDATA[if($this->config->get('upload_customer_status') && $this->config->get('upload_customer_register') && $this->config->get('upload_customer_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_customer_store'))) && isset($this->session->data['customer_upload']) && !empty($this->session->data['customer_upload'])) {
+				$this->load->model('myoc/copu');
+				$new_customer_id = $this->model_myoc_copu->getNewCustomerId();
+				if(method_exists($this->encryption, 'encrypt')) {
+					$encryption = $this->encryption;
+				} else {
+					$this->load->library('encryption');
+				 	$encryption = new Encryption($this->config->get('config_encryption'));
+				}
+				foreach($this->session->data['customer_upload'] as $upload) {
+					$this->model_myoc_copu->addUpload(array('filename' => $encryption->decrypt($upload), 'customer_id' => $new_customer_id));
+				}
+				unset($this->session->data['customer_upload']);
+			}]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/checkout/register.tpl">
+		<operation>
+			<search position="before"><![CDATA[<?php if ($text_agree) { ?>]]></search>
+			<add><![CDATA[<?php echo $copu_register; ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/model/checkout/order.php">
+    	<operation>
+			<search position="after"><![CDATA[function confirm(]]></search>
+			<add><![CDATA[if ($this->config->get('upload_order_status') && $this->config->get('upload_order_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_order_store'))) && isset($this->session->data['order_upload']) && !empty($this->session->data['order_upload'])) {
+				if(method_exists($this->encryption, 'encrypt')) {
+					$encryption = $this->encryption;
+				} else {
+					$this->load->library('encryption');
+				 	$encryption = new Encryption($this->config->get('config_encryption'));
+				}
+				$this->load->model('myoc/copu');
+				foreach($this->session->data['order_upload'] as $upload) {
+					$this->model_myoc_copu->addUpload(array('filename' => $encryption->decrypt($upload), 'order_id' => $order_id));
+				}
+			}]]></add>
+		</operation>
+		<operation>
+			<search position="before" index="1"><![CDATA[template/mail/order.tpl]]></search>
+			<add><![CDATA[$template->data['copu_order'] = false;
+				if($this->config->get('upload_order_status') && $this->config->get('upload_order_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_order_store')))) {
+					$this->load->model('myoc/copu');
+					$template->data['copu_order'] = $this->model_myoc_copu->getOrderUploadInvoice(array('language_directory' => $order_info['language_directory'], 'order_id' => $order_id, 'format' => 'html'));
+				}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$text .= $language->get('text_new_link')]]></search>
+			<add><![CDATA[}
+				$text .= $template->data['copu_order'] ? $this->model_myoc_copu->getOrderUploadInvoice(array('language_directory' => $order_info['language_directory'], 'order_id' => $order_id, 'format' => 'text')) : '';
+				if ($order_info['customer_id']) {]]></add>
+		</operation>
+		<operation>
+			<search position="after" index="4"><![CDATA[$text .= "\n";]]></search>
+			<add><![CDATA[$text .= $template->data['copu_order'] ? $this->model_myoc_copu->getOrderUploadInvoice(array('language_directory' => $order_info['language_directory'], 'order_id' => $order_id, 'format' => 'text')) : '';]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/mail/order.tpl">
+		<operation>
+			<search position="before"><![CDATA[<?php echo $text_footer; ?>]]></search>
+			<add><![CDATA[<?php echo $copu_order; ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/checkout/checkout.php">
+		<operation>
+			<search position="after"><![CDATA[function index(]]></search>
+			<add><![CDATA[if($this->config->get('upload_order_status') && $this->config->get('upload_order_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_order_store'))) && $this->config->get('upload_order_minimum') && (!isset($this->session->data['order_upload']) || count($this->session->data['order_upload']) < $this->config->get('upload_order_minimum'))) { $this->redirect($this->url->link('checkout/cart')); }
+			$this->document->addScript('catalog/view/javascript/jquery/ajaxupload.js');
+			if (file_exists('catalog/view/theme/' . $this->config->get('config_template') . '/stylesheet/copu.css')) {
+				$this->document->addStyle('catalog/view/theme/' . $this->config->get('config_template') . '/stylesheet/copu.css');
+			} else {
+				$this->document->addStyle('catalog/view/theme/default/stylesheet/copu.css');
+			}]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/checkout/confirm.php">
+   		<operation>
+			<search position="before" index="1"><![CDATA[if ($option['type'] != 'file')]]></search>
+			<add><![CDATA[if($option['type'] == 'file' && $this->config->get('upload_product_status') && $this->config->get('upload_product_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_product_store'))) && empty($option['option_value'])) { continue; }]]></add>
+		</operation>
+   		<operation>
+			<search position="before" index="2"><![CDATA[if ($option['type'] != 'file')]]></search>
+			<add><![CDATA[if($option['type'] == 'file' && $this->config->get('upload_product_status') && $this->config->get('upload_product_store') != "" && in_array($this->config->get('config_store_id'), explode(',', $this->config->get('upload_product_store')))) { continue; }]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->data['products'][] = array(]]></search>
+			<add><![CDATA[$this->data['copu_cart'][$product['key']] = $this->getChild('myoc/copu/cart', array('key' => $product['key']));]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$this->data['products'][] = array(]]></search>
+			<add><![CDATA['key' => $product['key'],]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->render()]]></search>
+			<add><![CDATA[$this->data['copu_checkout'] = $this->getChild('myoc/copu', array('type' => 'order', 'path' => 'checkout'));]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/checkout/confirm.tpl">
+		<operation>
+			<search position="after"><![CDATA[<?php echo $option['name']; ?>]]></search>
+			<add><![CDATA[<?php } echo $copu_cart[$product['key']]; if(false) { ?>]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[<?php echo $payment; ?>]]></search>
+			<add><![CDATA[<?php echo $copu_checkout; ?>]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/checkout/success.php">
+    	<operation>
+			<search position="after"><![CDATA[cart->clear(]]></search>
+			<add><![CDATA[if(isset($this->session->data['order_upload'])) { unset($this->session->data['order_upload']); }]]></add>
+		</operation>
+    </file>
+    <file name="catalog/controller/product/product.php">
+		<operation>
+			<search position="before" index="1"><![CDATA[$this->children = array(]]></search>
+			<add><![CDATA[$this->data['copu_product'] = array();
+					$upload_product_options = explode(',', $this->config->get('upload_product_option'));
+					foreach($this->data['options'] as $option) {
+						if($option['type'] == 'file' && in_array($option['option_id'], $upload_product_options)) {
+							$this->data['copu_product'][$option['product_option_id']] = $this->getChild('myoc/copu', array('type' => 'product', 'product_option_id' => $option['product_option_id'], 'filename_length' => 20));
+						}
+					}]]></add>
+		</operation>
+    </file>
+    <file name="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search position="before"><![CDATA[<?php echo $button_upload; ?>]]></search>
+			<add><![CDATA[<?php } if($option['type'] == 'file' && $copu_product && isset($copu_product[$option['product_option_id']])) { echo $copu_product[$option['product_option_id']]; } elseif($option['type'] == 'file') { ?>]]></add>
+		</operation>
+		<operation error="skip">
+			<search position="before"><![CDATA[animate]]></search>
+			<add><![CDATA[$(".copu-tbl tbody").find("tr:not(:last)").remove();
+				$(".copu-tbl tbody tr").each(function() { $(this).before(empty_row); });
+				$('#image').parent().attr('href', '<?php echo $popup; ?>');
+				$('#image').attr('src', '<?php echo $thumb; ?>');
+				$('input[name=quantity]').val(<?php echo $minimum; ?>);]]></add>
+		</operation>
+		<operation>
+			<search position="after" index="2"><![CDATA[<?php if ($option['type'] == 'file') { ?>]]></search>
+			<add><![CDATA[<?php } if($option['type'] == 'file' && (!$copu_product || !isset($copu_product[$option['product_option_id']]))) { ?>]]></add>
+		</operation>
+    </file>
+</modification>

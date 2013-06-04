@@ -1,0 +1,53 @@
+table.copu-tbl {
+	width: 100%;
+	border-collapse: collapse;
+	border-top: 1px solid #DDDDDD;
+	border-left: 1px solid #DDDDDD;
+	border-right: 1px solid #DDDDDD;
+	margin-bottom: 20px;
+}
+table.copu-tbl td {
+	padding: 7px;
+}
+table.copu-tbl thead td {
+	width: auto;
+	color: #222;
+	font-weight: bold;
+	background-color: #EFEFEF;
+	border-bottom: 1px solid #DDDDDD;
+}
+table.copu-tbl thead td.image {
+	padding: 7px;
+	float: none;
+	text-align: center;
+}
+table.copu-tbl thead td.name {
+	text-align: left;
+}
+table.copu-tbl thead td.size, table.copu-tbl thead td.date, table.copu-tbl thead td.action {
+	text-align: right;
+}
+table.copu-tbl tbody td {
+	width: auto;
+	vertical-align: top;
+	border-bottom: 1px solid #DDDDDD;
+}
+table.copu-tbl tbody td.image img {
+	border: 1px solid #DDDDDD;
+}
+table.copu-tbl tbody td.image, table.copu-tbl tbody tr.empty td {
+	float: none;
+	text-align: center;
+}
+table.copu-tbl tbody td.name {
+	text-align: left;
+}
+table.copu-tbl tbody td.size, table.copu-tbl tbody td.date, table.copu-tbl tbody td.action {
+	text-align: right;
+}
+table.copu-tbl tbody td.action img {
+	cursor: pointer;
+}
+table.copu-tbl tbody td.action span.allowed {
+	margin: 0 7px;
+}
