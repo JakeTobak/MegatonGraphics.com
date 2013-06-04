@@ -214,6 +214,7 @@ footer {
 * TEST AREA *
 *************/
 #testarea {
+	display: none;
 	background: #f00;
 	position: absolute;
 	top: 0px;
