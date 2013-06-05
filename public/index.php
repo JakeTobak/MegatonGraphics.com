@@ -11,6 +11,7 @@ ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
 	<meta name="description" content="" />
 	<meta name="keywords" content="jquery, horizontal, scrolling, scroll, smooth"/>
 	<link rel="stylesheet" href="assets/css/main.css" type="text/css" media="screen"/>
+	<meta name="test" content="" />
 </head>
 <body>
 	<div id="testarea">
