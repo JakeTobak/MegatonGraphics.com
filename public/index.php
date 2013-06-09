@@ -100,36 +100,25 @@ $body .= $_POST['contact']['message'].$eol;
 	</section>
 	<section id="products">
 		<h1>Products</h1>
-		<div style="background-image: url('assets/images/products/mirrors/rarity.jpg');" class="col4-3left row3-2 box">
+		<div style="background-image: url('assets/images/products/fightsticks/fightstick.jpg');" class="col4-3left row3-2 box">
+			<p>Custom Fightstick<br /><span style="font-size: 0.5em;">360/PS3/PC</span></p>
+		</div>
+		<div style="background-image: url('assets/images/products/drinkware/strebel.jpg');" class="col4-1right row3-2 box">
+			<p>Etched Pint Glasses</p>
+		</div>
+
+
+		<div style="background-image: url('assets/images/products/mirrors/rarity.jpg');" class="col4-1left row3-1 box">
 			<p>Rarity Mirror<br /><span style="font-size: 0.5em;">For Charity Auction</span></p>
 		</div>
-		<div style="background-image: url('assets/images/products/glasses/tiki.jpg');" class="col4-1right row3-2 box">
+		<div style="background-image: url('assets/images/products/drinkware/guilded.jpg');" class="col4-1left row3-1 box">
+			<p>Etched Pewter Mugs</p>
+		</div>
+		<div style="background-image: url('assets/images/products/glasses/trio.jpg');" class="col4-1left row3-1 box">
+			<p>Trio of Glasses</p>
+		</div>
+		<div style="background-image: url('assets/images/products/glasses/tiki.jpg');" class="col4-1right row3-1 box">
 			<p>Tiki Pint Glass</p>
-		</div>
-
-
-		<div style="background-image: url('assets/images/products/mirrors/rainbowdash.jpg');" class="col4-1left row3-1 box">
-			<p>Rainbow Dash Mirror</p>
-		</div>
-		<div style="background-image: url('assets/images/products/glasses/trio.jpg');" class="col4-1left row3-1 box">
-			<p>Trio of Glasses</p>
-		</div>
-		<div style="background-image: url('assets/images/products/glasses/trio.jpg');" class="col4-1left row3-1 box">
-			<p>Trio of Glasses</p>
-		</div>
-		<div style="background-image: url('assets/images/products/glasses/tiki.jpg');" class="col4-1right row3-2 box">
-			<p>Tiki Pint Glass</p>
-		</div>
-
-
-		<div style="background-image: url('assets/images/products/glasses/trio.jpg');" class="col4-1left row3-1 box">
-			<p>Trio of Glasses</p>
-		</div>
-		<div style="background-image: url('assets/images/products/glasses/trio.jpg');" class="col4-1left row3-1 box">
-			<p>Trio of Glasses</p>
-		</div>
-		<div style="background-image: url('assets/images/products/glasses/trio.jpg');" class="col4-1left row3-1 box">
-			<p>Trio of Glasses</p>
 		</div>
 	</section>
 
