@@ -104,7 +104,7 @@ $body .= $_POST['contact']['message'].$eol;
 			<p>Custom Fightstick<br /><span style="font-size: 0.5em;">360/PS3/PC</span></p>
 		</div>
 		<div style="background-image: url('assets/images/products/drinkware/strebel.jpg');" class="col4-1right row3-2 box">
-			<p>Etched Pint Glasses</p>
+			<p>Etched Glassware</p>
 		</div>
 
 
@@ -114,11 +114,11 @@ $body .= $_POST['contact']['message'].$eol;
 		<div style="background-image: url('assets/images/products/drinkware/guilded.jpg');" class="col4-1left row3-1 box">
 			<p>Etched Pewter Mugs</p>
 		</div>
-		<div style="background-image: url('assets/images/products/glasses/trio.jpg');" class="col4-1left row3-1 box">
-			<p>Trio of Glasses</p>
+		<div style="background-image: url('assets/images/products/drinkware/trio.jpg');" class="col4-1left row3-1 box">
+			<p>Etched Glassware</p>
 		</div>
-		<div style="background-image: url('assets/images/products/glasses/tiki.jpg');" class="col4-1right row3-1 box">
-			<p>Tiki Pint Glass</p>
+		<div style="background-image: url('assets/images/products/drinkware/tiki.jpg');" class="col4-1right row3-1 box">
+			<p>Etched Glassware</p>
 		</div>
 	</section>
 
