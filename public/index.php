@@ -98,7 +98,7 @@ if(isset($_POST['contact']['submit'])) {
 		<div style="background-image: url('assets/images/products/drinkware/trio.jpg');" class="col4-1left row3-1 box">
 			<p>Etched Glassware</p>
 		</div>
-		<div style="background-image: url('assets/images/products/drinkware/tiki.jpg');" class="col4-1right row3-2 box">
+		<div style="background-image: url('assets/images/products/drinkware/tiki.jpg');" class="col4-1right row3-1 box">
 			<p>Etched Glassware</p>
 		</div>
 	</section>
