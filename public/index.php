@@ -2,8 +2,33 @@
 //This is just a quick bit of code to get this thing working so we
 //can start making money. Should switch to a proper MVC design later.
 ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
-?>
 
+//Contact Form
+if(isset($_POST['contact']['submit'])) {
+
+	$Name = $_POST['contact']['name'];
+	$email = $_POST['contact']['email'];
+	$recipient = 'info@megatongraphics.com';
+	$subject = "Megaton Contact Form - " . $_POST['contact']['name']; 
+
+	// main header
+	$header  = "From: " . $_POST['contact']['name'] . " <" . $_POST['contact']['email'] . ">" . $eol;
+	$header .= "MIME-Version: 1.0".$eol; 
+	$header .= "Content-Type: multipart/mixed; boundary=\"".$separator."\"";
+
+	// no more headers after this, we start the body! //
+	$body = "--".$separator.$eol;
+	$body .= "Content-Transfer-Encoding: 7bit".$eol.$eol;
+
+	// message
+	$body .= "--".$separator.$eol;
+	$body .= "Content-Type: text/html; charset=\"iso-8859-1\"".$eol;
+	$body .= "Content-Transfer-Encoding: 8bit".$eol.$eol;
+	$body .= $_POST['contact']['message'].$eol;
+	mail($recipient, $subject, $body, $header);
+}
+?>
+<!DOCTYPE HTML>
 <html>
 <head>
 	<title>Megaton Graphics</title>
@@ -14,49 +39,9 @@ ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 </head>
 <body>
-	<div id="testarea">
-		<pre>
-<?php
-print_r($_POST) . "\n";
-print_r($_FILES) . "\n";
-//Contact Form
-if(isset($_POST['contact']['submit'])) {
 
 
 
-	$Name = $_POST['contact']['name'];
-	$email = $_POST['contact']['email'];
-	$recipient = 'jtobak@megatongraphics.com';
-	$subject = "Megaton Contact Form - " . $_POST['contact']['name']; 
-
-
-// main header
-$header  = "From: " . $_POST['contact']['name'] . " <" . $_POST['contact']['email'] . ">" . $eol;
-$header .= "MIME-Version: 1.0".$eol; 
-$header .= "Content-Type: multipart/mixed; boundary=\"".$separator."\"";
-
-// no more headers after this, we start the body! //
-
-$body = "--".$separator.$eol;
-$body .= "Content-Transfer-Encoding: 7bit".$eol.$eol;
-
-// message
-$body .= "--".$separator.$eol;
-$body .= "Content-Type: text/html; charset=\"iso-8859-1\"".$eol;
-$body .= "Content-Transfer-Encoding: 8bit".$eol.$eol;
-$body .= $_POST['contact']['message'].$eol;
-
-
-	if(mail($recipient, $subject, $body, $header)) {
-		echo "SUCCESS";
-	}
-	else {
-		echo "FAILURE";
-	}
-}
-?>
-		</pre>
-	</div>
 	<section id="home">
 		<div id="logo">
 			<img src="assets/images/logo.png" />
@@ -130,7 +115,7 @@ $body .= $_POST['contact']['message'].$eol;
 				<input type="text" name="contact[name]" placeholder="Name" /><br />
 				<input type="text" name="contact[email]" placeholder="e-mail" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" /><br />
 				<textarea name="contact[message]" placeholder="Message"></textarea><br />
-				<input type="file" name="contact[file]" id="file">
+				<!--input type="file" name="contact[file]" id="file"-->
 			</div>
 			<div class="col2right">
 				<input type="submit" name="contact[submit]" value="submit" /><br />
