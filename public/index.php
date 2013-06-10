@@ -39,6 +39,8 @@ if(isset($_POST['contact']['submit'])) {
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 </head>
 <body>
+
+
 	<section id="home">
 		<div id="logo">
 			<img src="assets/images/logo.png" />
