@@ -28,7 +28,6 @@ if(isset($_POST['contact']['submit'])) {
 	mail($recipient, $subject, $body, $header);
 }
 ?>
-<!DOCTYPE HTML>
 <html>
 <head>
 	<title>Megaton Graphics</title>
