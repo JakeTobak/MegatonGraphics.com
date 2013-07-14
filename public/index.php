@@ -20,6 +20,7 @@ if(isset($_POST['contact']['submit'])) {
 		$zip = new ZipArchive();
 		$zipLocation = tempnam("/tmp", "zip"); 
 		$zip->open($zipLocation, ZipArchive::OVERWRITE);
+		$zip->addFromString('test.txt', 'file content goes here');
 		$zip->addFile($_FILES['imageFile']['tmp_name'],$_FILES['imageFile']['name']);
 		$zip->close();
 
