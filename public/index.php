@@ -7,7 +7,7 @@ ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
 if(isset($_POST['contact']['submit'])) {
 
 	$eol = "\r\n";
-	$seperator = md5(date('r', time()));
+	//$seperator = md5(date('r', time()));
 
 	$Name = $_POST['contact']['name'];
 	$email = $_POST['contact']['email'];
@@ -20,7 +20,7 @@ if(isset($_POST['contact']['submit'])) {
 	$header .= "Content-Type: multipart/mixed; boundary=\"" . $separator . "\"";
 
 	// no more headers after this, we start the body! //
-	$body = "--".$separator . $eol;
+	$body = "--" . $separator . $eol;
 	$body .= "Content-Transfer-Encoding: 7bit" . $eol;
 	$body .= $eol;
 
