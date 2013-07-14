@@ -7,21 +7,28 @@ ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
 if(isset($_POST['contact']['submit'])) {
 
 	$eol = "\r\n";
+	$seperator = md5(date('r', time()));
 
 	$Name = $_POST['contact']['name'];
 	$email = $_POST['contact']['email'];
 	$recipient = 'info@megatongraphics.com';
-	$subject = "Megaton Contact Form - " . $_POST['contact']['name']; 
+	$subject = "Megaton Contact Form - " . $_POST['contact']['name'];
 
 	// main header
 	$header  = "From: " . $_POST['contact']['name'] . " <" . $_POST['contact']['email'] . ">" . $eol;
-	$header .= "Reply-To: " . $_POST['contact']['email'] . $eol; 
-	$header .= "MIME-Version: 1.0" . $eol; 
-	$header .= "Content-Type: text/html; charset=\"iso-8859-1\"" . $eol;
-	$header .= "Content-Transfer-Encoding: 8bit" . $eol;
-	$header .= $eol;
+	$header .= "MIME-Version: 1.0" . $eol;
+	$header .= "Content-Type: multipart/mixed; boundary=\"" . $separator . "\"";
+
+	// no more headers after this, we start the body! //
+	$body = "--".$separator . $eol;
+	$body .= "Content-Transfer-Encoding: 7bit" . $eol;
+	$body .= $eol;
 
 	// message
+	$body .= "--" . $separator . $eol;
+	$body .= "Content-Type: text/html; charset=\"iso-8859-1\"" . $eol;
+	$body .= "Content-Transfer-Encoding: 8bit" . $eol
+	$body .= $eol;
 	$body .= $_POST['contact']['message'] . $eol;
 	mail($recipient, $subject, $body, $header);
 }
