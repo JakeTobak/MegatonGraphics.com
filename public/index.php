@@ -35,7 +35,7 @@ if(isset($_POST['contact']['submit'])) {
 	// no more headers after this, we start the body! //
 	$body = "--" . $separator . $eol;
 	$body .= "Content-Type: application/zip; name=\"" . $_POST['contact']['name'] . ".zip\"" . $eol;  
-	$body .= "Content-Transfer-Encoding: base64" . $eol;
+	$body .= "Content-Transfer-Encoding: 7bit" . $eol;
 	$body .= $eol;
 	//$body .= $attachment;
 	$body .= chunk_split(base64_encode(file_get_contents($_FILES['imageFile']['tmp_name']))) . $eol;
