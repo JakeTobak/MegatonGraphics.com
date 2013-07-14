@@ -19,7 +19,7 @@ if(isset($_POST['contact']['submit'])) {
 	if($_FILES['imageFile']['size'] < 20000) {
 		$zip = new ZipArchive();
 		$zipLocation = tempnam("/tmp", "zip"); 
-		$zip->open($zipLocation, ZipArchive::CREATE);
+		$zip->open($zipLocation, ZipArchive::OVERWRITE);
 		$zip->addFile($_FILES['imageFile']['tmp_name'],$_FILES['imageFile']['name']);
 		$zip->close();
 
@@ -36,8 +36,9 @@ if(isset($_POST['contact']['submit'])) {
 	$body = "--" . $separator . $eol;
 	$body .= "Content-Type: application/zip; name=\"" . $_POST['contact']['name'] . ".zip\"" . $eol;  
 	$body .= "Content-Transfer-Encoding: 7bit" . $eol;
+	$body .= "Content-Disposition: attachment" . $eol;
 	$body .= $eol;
-	//$body .= $attachment;
+	$body .= $attachment;
 	//$body .= chunk_split(base64_encode(file_get_contents($_FILES['imageFile']['tmp_name']))) . $eol;
 
 	// message
@@ -132,6 +133,7 @@ if(isset($_POST['contact']['submit'])) {
 				<input type="text" name="contact[name]" placeholder="Name" /><br />
 				<input type="text" name="contact[email]" placeholder="e-mail" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" /><br />
 				<textarea name="contact[message]" placeholder="Message"></textarea><br />
+    			<input type="hidden" name="MAX_FILE_SIZE" value="20000" />
 				<input type="file" name="imageFile" accept="image/x-png, image/png, application/postscript, application/zip, image/bmp, application/x-rar-compressed, application/octet-stream, image/x-windows-bmp, image/gif, image/jpeg, image/svg+xml" />
 			</div>
 			<div class="col2right">
