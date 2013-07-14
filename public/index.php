@@ -2,29 +2,52 @@
 //This is just a quick bit of code to get this thing working so we
 //can start making money. Should switch to a proper MVC design later.
 ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
-
+error_reporting(E_ALL);
 //Contact Form
 if(isset($_POST['contact']['submit'])) {
+
+	$eol = "\r\n";
+	$separator = md5(date('r', time()));
 
 	$Name = $_POST['contact']['name'];
 	$email = $_POST['contact']['email'];
 	$recipient = 'info@megatongraphics.com';
-	$subject = "Megaton Contact Form - " . $_POST['contact']['name']; 
+	$subject = "Megaton Contact Form - " . $_POST['contact']['name'];
+
+	$attachment = "";
+
+	// if($_FILES['imageFile']['size'] < 20000) {
+	// 	$zip = new ZipArchive();
+	// 	$zipLocation = tempnam("/tmp", "zip"); 
+	// 	$zip->open($zipLocation, ZipArchive::OVERWRITE);
+	// 	$zip->addFromString('test.txt', 'file content goes here');
+	// 	$zip->addFile($_FILES['imageFile']['tmp_name'],$_FILES['imageFile']['name']);
+	// 	$zip->close();
+
+	// 	$attachment = chunk_split(base64_encode(file_get_contents($zipLocation))); 
+	// }
 
 	// main header
 	$header  = "From: " . $_POST['contact']['name'] . " <" . $_POST['contact']['email'] . ">" . $eol;
-	$header .= "MIME-Version: 1.0".$eol; 
-	$header .= "Content-Type: multipart/mixed; boundary=\"".$separator."\"";
+	$header .= "Reply-To: " . $_POST['contact']['email'] . $eol;
+	$header .= "MIME-Version: 1.0" . $eol;
+	$header .= "Content-Type: multipart/mixed; boundary=\"" . $separator . "\"";
 
 	// no more headers after this, we start the body! //
-	$body = "--".$separator.$eol;
-	$body .= "Content-Transfer-Encoding: 7bit".$eol.$eol;
+	// $body = "--" . $separator . $eol;
+	// $body .= "Content-Type: application/zip; name=\"" . $_POST['contact']['name'] . ".zip\"" . $eol;  
+	// $body .= "Content-Transfer-Encoding: 7bit" . $eol;
+	// $body .= "Content-Disposition: attachment" . $eol;
+	// $body .= $eol;
+	// $body .= $attachment;
+	//$body .= chunk_split(base64_encode(file_get_contents($_FILES['imageFile']['tmp_name']))) . $eol;
 
 	// message
-	$body .= "--".$separator.$eol;
-	$body .= "Content-Type: text/html; charset=\"iso-8859-1\"".$eol;
-	$body .= "Content-Transfer-Encoding: 8bit".$eol.$eol;
-	$body .= $_POST['contact']['message'].$eol;
+	$body .= "--" . $separator . $eol;
+	$body .= "Content-Type: text/html; charset=\"iso-8859-1\"" . $eol;
+	$body .= "Content-Transfer-Encoding: 8bit" . $eol;
+	$body .= $eol;
+	$body .= $_POST['contact']['message'] . $eol;
 	mail($recipient, $subject, $body, $header);
 }
 ?>
@@ -106,17 +129,19 @@ if(isset($_POST['contact']['submit'])) {
 	<section id="contactus">
 		<h1>Contact Us</h1>
 		
-		<form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST" enctype="multipart/form-data">
+		<form action="index.php" method="POST" enctype="multipart/form-data">
 			<div class="col2left">
 				<input type="text" name="contact[name]" placeholder="Name" /><br />
 				<input type="text" name="contact[email]" placeholder="e-mail" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" /><br />
 				<textarea name="contact[message]" placeholder="Message"></textarea><br />
-				<!--input type="file" name="contact[file]" id="file"-->
+    			<input type="hidden" name="MAX_FILE_SIZE" value="20000" />
+				<!--input type="file" name="imageFile" accept="image/x-png, image/png, application/postscript, application/zip, image/bmp, application/x-rar-compressed, application/octet-stream, image/x-windows-bmp, image/gif, image/jpeg, image/svg+xml" /-->
 			</div>
 			<div class="col2right">
 				<input type="submit" name="contact[submit]" value="submit" /><br />
 				<p>Have a question or just curious about the process?<br />
-				   Drop us a line, we’d love to start a chat.</p>
+				   Drop us a line, we’d love to start a chat.<br />
+				   Please be patient if uploading large files and do not hit submit more than once, thank you.</p>
 			</div>
 		</form>
 	</section>
