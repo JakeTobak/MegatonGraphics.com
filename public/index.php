@@ -15,10 +15,11 @@ if(isset($_POST['contact']['submit'])) {
 	$header  = "From: " . $_POST['contact']['name'] . " <" . $_POST['contact']['email'] . ">" . $eol;
 	$header .= "Reply-To: " . $_POST['contact']['email'] . $eol; 
 	$header .= "MIME-Version: 1.0" . $eol; 
+	$header .= "Content-Type: text/html; charset=\"iso-8859-1\"" . $eol;
+	$header .= "Content-Transfer-Encoding: 8bit" . $eol;
+	$header .= $eol;
 
 	// message
-	$body .= "Content-Type: text/html; charset=\"iso-8859-1\"" . $eol;
-	$body .= "Content-Transfer-Encoding: 8bit" . $eol . $eol;
 	$body .= $_POST['contact']['message'] . $eol;
 	mail($recipient, $subject, $body, $header);
 }
@@ -101,7 +102,7 @@ if(isset($_POST['contact']['submit'])) {
 	<section id="contactus">
 		<h1>Contact Us</h1>
 		
-		<form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+		<form action="index.php" method="POST">
 			<div class="col2left">
 				<input type="text" name="contact[name]" placeholder="Name" /><br />
 				<input type="text" name="contact[email]" placeholder="e-mail" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" /><br />
