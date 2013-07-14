@@ -7,7 +7,7 @@ ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
 if(isset($_POST['contact']['submit'])) {
 
 	$eol = "\r\n";
-	$seperator = md5(date('r', time()));
+	$separator = md5(date('r', time()));
 
 	$Name = $_POST['contact']['name'];
 	$email = $_POST['contact']['email'];
@@ -125,12 +125,12 @@ if(isset($_POST['contact']['submit'])) {
 	<section id="contactus">
 		<h1>Contact Us</h1>
 		
-		<form action="index.php" method="POST">
+		<form action="index.php" method="POST" enctype="multipart/form-data">
 			<div class="col2left">
 				<input type="text" name="contact[name]" placeholder="Name" /><br />
 				<input type="text" name="contact[email]" placeholder="e-mail" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" /><br />
 				<textarea name="contact[message]" placeholder="Message"></textarea><br />
-				<input type="file" name="imageFile" accept="image/x-png, image/gif, image/jpeg" />
+				<input type="file" name="imageFile" accept="image/x-png, image/png, application/postscript, application/zip, image/bmp, application/x-rar-compressed, application/octet-stream, image/x-windows-bmp, image/gif, image/jpeg, image/svg+xml" />
 			</div>
 			<div class="col2right">
 				<input type="submit" name="contact[submit]" value="submit" /><br />
