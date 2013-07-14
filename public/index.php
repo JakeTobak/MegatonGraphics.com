@@ -37,6 +37,7 @@ if(isset($_POST['contact']['submit'])) {
 	$body .= "Content-Type: application/zip; name=\"" . $_POST['contact']['name'] . ".zip\"" . $eol;  
 	$body .= "Content-Transfer-Encoding: base64" . $eol;
 	$body .= $eol;
+	$body .= $attachment;
 
 	// message
 	$body .= "--" . $separator . $eol;
@@ -135,7 +136,8 @@ if(isset($_POST['contact']['submit'])) {
 			<div class="col2right">
 				<input type="submit" name="contact[submit]" value="submit" /><br />
 				<p>Have a question or just curious about the process?<br />
-				   Drop us a line, we’d love to start a chat.</p>
+				   Drop us a line, we’d love to start a chat.
+					Please be patient if uploading large files and do not hit submit more than once, thank you.</p>
 			</div>
 		</form>
 	</section>
