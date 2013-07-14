@@ -19,7 +19,7 @@ if(isset($_POST['contact']['submit'])) {
 	if($_FILES['imageFile']['size'] < 20000) {
 		$zip = new ZipArchive();
 		$zipLocation = tempnam("/tmp", "zip"); 
-		$zip->open($zipLocation, ZipArchive::CREATE)
+		$zip->open($zipLocation, ZipArchive::CREATE);
 		$zip->addFile($_FILES['imageFile']['tmp_name'],$_FILES['imageFile']['name']);
 		$zip->close();
 
