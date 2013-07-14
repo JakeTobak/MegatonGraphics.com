@@ -7,7 +7,7 @@ ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
 if(isset($_POST['contact']['submit'])) {
 
 	$eol = "\r\n";
-	//$seperator = md5(date('r', time()));
+	$seperator = md5(date('r', time()));
 
 	$Name = $_POST['contact']['name'];
 	$email = $_POST['contact']['email'];
@@ -27,7 +27,7 @@ if(isset($_POST['contact']['submit'])) {
 	// message
 	$body .= "--" . $separator . $eol;
 	$body .= "Content-Type: text/html; charset=\"iso-8859-1\"" . $eol;
-	$body .= "Content-Transfer-Encoding: 8bit" . $eol
+	$body .= "Content-Transfer-Encoding: 8bit" . $eol;
 	$body .= $eol;
 	$body .= $_POST['contact']['message'] . $eol;
 	mail($recipient, $subject, $body, $header);
