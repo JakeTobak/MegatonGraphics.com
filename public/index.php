@@ -38,7 +38,7 @@ if(isset($_POST['contact']['submit'])) {
 	$body .= "Content-Transfer-Encoding: 7bit" . $eol;
 	$body .= $eol;
 	//$body .= $attachment;
-	$body .= chunk_split(base64_encode(file_get_contents($_FILES['imageFile']['tmp_name']))) . $eol;
+	//$body .= chunk_split(base64_encode(file_get_contents($_FILES['imageFile']['tmp_name']))) . $eol;
 
 	// message
 	$body .= "--" . $separator . $eol;
