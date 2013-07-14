@@ -16,7 +16,10 @@ if(isset($_POST['contact']['submit'])) {
 
 	$attachment = "";
 
-	if($_FILES['imageFile']['size'] < 20000) {
+	if($_FILES['imageFile']['size'] < 20000) 
+		echo $_FILES['imageFile']['size'] . " -- ";
+		echo $_FILES['imageFile']['tmp_name'] . " -- ";
+		echo $_FILES['imageFile']['name'] . " -- ";
 		$zip = new ZipArchive();
 		$zipLocation = tempnam("/tmp", "zip"); 
 		$zip->open($zipLocation, ZipArchive::OVERWRITE);
