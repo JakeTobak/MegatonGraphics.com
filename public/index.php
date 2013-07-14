@@ -2,7 +2,7 @@
 //This is just a quick bit of code to get this thing working so we
 //can start making money. Should switch to a proper MVC design later.
 ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
-
+error_reporting(E_ALL);
 //Contact Form
 if(isset($_POST['contact']['submit'])) {
 
