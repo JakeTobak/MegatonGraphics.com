@@ -6,6 +6,8 @@ ini_set('mail.log', '/srv/www/megatongraphics.com/logs/mail.log');
 //Contact Form
 if(isset($_POST['contact']['submit'])) {
 
+	$eol = "\r\n";
+
 	$Name = $_POST['contact']['name'];
 	$email = $_POST['contact']['email'];
 	$recipient = 'info@megatongraphics.com';
